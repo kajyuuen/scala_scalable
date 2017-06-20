@@ -2,12 +2,10 @@ object Element{
   private class ArrayElement(
     val contents: Array[String]
   ) extends Element
-
   private class LineElement(s: String) extends ArrayElement(Array(s)){
     override def width = s.length
     override def height = 1
   }
-
   private class UniformElement(
     ch: Char,
     override val width: Int,
@@ -34,6 +32,7 @@ abstract class Element{
   def above(that: Element): Element = {
     val this1 = this widen that.width
     val that1 = that widen this.width
+    assert(this1.width == that1.width)
     elem(this.contents ++ that.contents)
   }
   def beside(that: Element): Element = {
@@ -51,7 +50,7 @@ abstract class Element{
       val left = elem(' ', (w - width) / 2, height)
       val right = elem(' ', w - width - left.width, height)
       left beside this beside right
-    }
+    } ensuring(w <= _.width)
   def heighten(h: Int): Element =
     if(h <= height) this
     else{
